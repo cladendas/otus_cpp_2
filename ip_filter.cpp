@@ -78,7 +78,6 @@ int main(int argc, char const *argv[])
 
         // TODO filter by first byte and output
         // ip = filter(1)
-
         auto ip_view_filter_1 = ip_pool | std::ranges::views::filter([](auto ip) {
             return std::stoi(ip[0]) == 1;
         });
