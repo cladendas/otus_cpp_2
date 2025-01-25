@@ -7,6 +7,49 @@
 #include <algorithm>
 #include <ranges>
 
+template<typename T>
+void print_ip(T ip_pool) {
+    for (auto ip: ip_pool) {
+        for (auto oktet: ip) {
+            if (*(ip.end() - 1) != oktet) {
+                std::cout << oktet << '.';
+            } else {
+               std::cout << oktet; 
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+template<typename T>
+void filter(T ip_pool, int oktet) {
+    auto ip_view_filter = ip_pool | std::ranges::views::filter([](auto ip) {
+        return std::stoi(ip[0]) == 1;
+    });
+    print_ip(ip_view_filter);
+}
+
+template<typename T>
+void filter(T ip_pool, int oktet_0, int oktet_1) {
+    auto ip_view_filter = ip_pool | std::ranges::views::filter([oktet_0, oktet_1](auto ip) {
+        return (std::stoi(ip[0]) == oktet_0 && std::stoi(ip[1]) == oktet_1);
+    });
+    print_ip(ip_view_filter);
+}
+
+template<typename T>
+void filter_any(T ip_pool, int oktet) {
+    auto ip_view_filter = ip_pool | std::ranges::views::filter([oktet](auto ip) {
+        for (auto tmp: ip) {
+            if (std::stoi(tmp) == oktet) {
+                return true;
+            }
+        } 
+        return false;
+    });
+    print_ip(ip_view_filter);
+}
+
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
 // ("..", '.') -> ["", "", ""]
@@ -55,19 +98,6 @@ int main(int argc, char const *argv[])
             return false;
         });
 
-        for(auto ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
-        {
-            for(auto ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
-            {
-                if (ip_part != ip->cbegin())
-                {
-                    std::cout << ".";
-                }
-                std::cout << *ip_part;
-            }
-            std::cout << std::endl;
-        }
-
         // 222.173.235.246
         // 222.130.177.64
         // 222.82.198.61
@@ -75,19 +105,13 @@ int main(int argc, char const *argv[])
         // 1.70.44.170
         // 1.29.168.152
         // 1.1.234.8
+        print_ip(ip_pool);
+
 
         // TODO filter by first byte and output
         // ip = filter(1)
-        auto ip_view_filter_1 = ip_pool | std::ranges::views::filter([](auto ip) {
-            return std::stoi(ip[0]) == 1;
-        });
 
-        for(auto ip: ip_view_filter_1) {
-            for(auto oktet: ip) {
-                std::cout << oktet << '.';
-            }
-            std::cout << std::endl;
-        }
+        filter(ip_pool, 1);
 
         // 1.231.69.33
         // 1.87.203.225
@@ -98,6 +122,8 @@ int main(int argc, char const *argv[])
         // TODO filter by first and second bytes and output
         // ip = filter(46, 70)
 
+        filter(ip_pool, 46, 70);
+
         // 46.70.225.39
         // 46.70.147.26
         // 46.70.113.73
@@ -105,6 +131,8 @@ int main(int argc, char const *argv[])
 
         // TODO filter by any byte and output
         // ip = filter_any(46)
+
+        filter_any(ip_pool, 46);
 
         // 186.204.34.46
         // 186.46.222.194
