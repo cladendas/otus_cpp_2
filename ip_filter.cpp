@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iterator>
+#include <algorithm>
+#include <ranges>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -75,6 +78,17 @@ int main(int argc, char const *argv[])
 
         // TODO filter by first byte and output
         // ip = filter(1)
+
+        auto ip_view_filter_1 = ip_pool | std::ranges::views::filter([](auto ip) {
+            return std::stoi(ip[0]) == 1;
+        });
+
+        for(auto ip: ip_view_filter_1) {
+            for(auto oktet: ip) {
+                std::cout << oktet << '.';
+            }
+            std::cout << std::endl;
+        }
 
         // 1.231.69.33
         // 1.87.203.225
